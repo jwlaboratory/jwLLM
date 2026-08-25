@@ -6,13 +6,3 @@ using std::endl;
 using std::getline;
 using std::string;
 using std::vector;
-
-int main()
-{
-
-    cout << "User: ";
-    string user_input;
-    getline(cin, user_input);
-
-    return 0;
-}
