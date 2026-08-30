@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /Users/shreybirmiwal/projects/jwlabs/jwLLM/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/opt/homebrew/bin/ctest $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
@@ -84,6 +94,51 @@ rebuild_cache:
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"gmock\" \"gtest\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -117,6 +172,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named jwllm
+
+# Build rule for target.
+jwllm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jwllm
+.PHONY : jwllm
+
+# fast build rule for target.
+jwllm/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/build
+.PHONY : jwllm/fast
+
+#=============================================================================
 # Target rules for targets named my_app
 
 # Build rule for target.
@@ -128,6 +196,71 @@ my_app: cmake_check_build_system
 my_app/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_app.dir/build.make CMakeFiles/my_app.dir/build
 .PHONY : my_app/fast
+
+#=============================================================================
+# Target rules for targets named jwllm_tests
+
+# Build rule for target.
+jwllm_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jwllm_tests
+.PHONY : jwllm_tests
+
+# fast build rule for target.
+jwllm_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/build
+.PHONY : jwllm_tests/fast
+
+#=============================================================================
+# Target rules for targets named gmock
+
+# Build rule for target.
+gmock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
+.PHONY : gmock
+
+# fast build rule for target.
+gmock/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
+.PHONY : gmock/fast
+
+#=============================================================================
+# Target rules for targets named gmock_main
+
+# Build rule for target.
+gmock_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
+.PHONY : gmock_main
+
+# fast build rule for target.
+gmock_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
+.PHONY : gmock_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -153,6 +286,102 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_app.dir/build.make CMakeFiles/my_app.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/tensor.o: src/tensor.cpp.o
+.PHONY : src/tensor.o
+
+# target to build an object file
+src/tensor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tensor.cpp.o
+.PHONY : src/tensor.cpp.o
+
+src/tensor.i: src/tensor.cpp.i
+.PHONY : src/tensor.i
+
+# target to preprocess a source file
+src/tensor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tensor.cpp.i
+.PHONY : src/tensor.cpp.i
+
+src/tensor.s: src/tensor.cpp.s
+.PHONY : src/tensor.s
+
+# target to generate assembly for a file
+src/tensor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tensor.cpp.s
+.PHONY : src/tensor.cpp.s
+
+src/tokenizer.o: src/tokenizer.cpp.o
+.PHONY : src/tokenizer.o
+
+# target to build an object file
+src/tokenizer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tokenizer.cpp.o
+.PHONY : src/tokenizer.cpp.o
+
+src/tokenizer.i: src/tokenizer.cpp.i
+.PHONY : src/tokenizer.i
+
+# target to preprocess a source file
+src/tokenizer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tokenizer.cpp.i
+.PHONY : src/tokenizer.cpp.i
+
+src/tokenizer.s: src/tokenizer.cpp.s
+.PHONY : src/tokenizer.s
+
+# target to generate assembly for a file
+src/tokenizer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm.dir/build.make CMakeFiles/jwllm.dir/src/tokenizer.cpp.s
+.PHONY : src/tokenizer.cpp.s
+
+tests/test_tensor.o: tests/test_tensor.cpp.o
+.PHONY : tests/test_tensor.o
+
+# target to build an object file
+tests/test_tensor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tensor.cpp.o
+.PHONY : tests/test_tensor.cpp.o
+
+tests/test_tensor.i: tests/test_tensor.cpp.i
+.PHONY : tests/test_tensor.i
+
+# target to preprocess a source file
+tests/test_tensor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tensor.cpp.i
+.PHONY : tests/test_tensor.cpp.i
+
+tests/test_tensor.s: tests/test_tensor.cpp.s
+.PHONY : tests/test_tensor.s
+
+# target to generate assembly for a file
+tests/test_tensor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tensor.cpp.s
+.PHONY : tests/test_tensor.cpp.s
+
+tests/test_tokenizer.o: tests/test_tokenizer.cpp.o
+.PHONY : tests/test_tokenizer.o
+
+# target to build an object file
+tests/test_tokenizer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tokenizer.cpp.o
+.PHONY : tests/test_tokenizer.cpp.o
+
+tests/test_tokenizer.i: tests/test_tokenizer.cpp.i
+.PHONY : tests/test_tokenizer.i
+
+# target to preprocess a source file
+tests/test_tokenizer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tokenizer.cpp.i
+.PHONY : tests/test_tokenizer.cpp.i
+
+tests/test_tokenizer.s: tests/test_tokenizer.cpp.s
+.PHONY : tests/test_tokenizer.s
+
+# target to generate assembly for a file
+tests/test_tokenizer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/jwllm_tests.dir/build.make CMakeFiles/jwllm_tests.dir/tests/test_tokenizer.cpp.s
+.PHONY : tests/test_tokenizer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -160,11 +389,34 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... test"
+	@echo "... gmock"
+	@echo "... gmock_main"
+	@echo "... gtest"
+	@echo "... gtest_main"
+	@echo "... jwllm"
+	@echo "... jwllm_tests"
 	@echo "... my_app"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/tensor.o"
+	@echo "... src/tensor.i"
+	@echo "... src/tensor.s"
+	@echo "... src/tokenizer.o"
+	@echo "... src/tokenizer.i"
+	@echo "... src/tokenizer.s"
+	@echo "... tests/test_tensor.o"
+	@echo "... tests/test_tensor.i"
+	@echo "... tests/test_tensor.s"
+	@echo "... tests/test_tokenizer.o"
+	@echo "... tests/test_tokenizer.i"
+	@echo "... tests/test_tokenizer.s"
 .PHONY : help
 
 

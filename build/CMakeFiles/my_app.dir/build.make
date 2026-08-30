@@ -95,6 +95,7 @@ my_app_EXTERNAL_OBJECTS =
 
 my_app: CMakeFiles/my_app.dir/src/main.cpp.o
 my_app: CMakeFiles/my_app.dir/build.make
+my_app: libjwllm.a
 my_app: CMakeFiles/my_app.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable my_app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/my_app.dir/link.txt --verbose=$(VERBOSE)

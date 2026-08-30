@@ -1,7 +1,10 @@
 {
 	"InstallScripts" : 
 	[
-		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/cmake_install.cmake"
+		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/cmake_install.cmake",
+		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/_deps/googletest-build/cmake_install.cmake",
+		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/_deps/googletest-build/googlemock/cmake_install.cmake",
+		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/_deps/googletest-build/googletest/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

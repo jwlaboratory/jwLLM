@@ -1,0 +1,5 @@
+if(EXISTS "/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/jwllm_tests_c9669541_tests.cmake")
+  include("/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/jwllm_tests_c9669541_tests.cmake")
+else()
+  add_test(jwllm_tests_NOT_BUILT jwllm_tests_NOT_BUILT)
+endif()

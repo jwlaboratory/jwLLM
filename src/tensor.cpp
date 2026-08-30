@@ -1,28 +1,22 @@
-#include <iostream>
-using std::cout;
-using std::endl;
+#include "tensor.hpp"
+
+#include <stdexcept>
+
 using std::vector;
 
-class Tensor
+Tensor::Tensor(vector<int> dims, vector<float> passed_data)
 {
-public:
-    vector<int> dimension_sizes;
-    vector<float> data;
 
-    Tensor(vector<int> dims, vector<float> passed_data)
+    int max_total = dims[0];
+    for (int i = 1; i < dims.size(); i++)
     {
-
-        int max_total = dims[0];
-        for (int i = 1; i < dims.size(); i++)
-        {
-            max_total *= dims[i];
-        }
-        if (max_total != passed_data.size())
-        {
-            throw std::invalid_argument("dimensions must match total amount of data");
-        }
-
-        dimension_sizes = dims;
-        data = passed_data;
+        max_total *= dims[i];
     }
-};
+    if (max_total != passed_data.size())
+    {
+        throw std::invalid_argument("dimensions must match total amount of data");
+    }
+
+    dimension_sizes = dims;
+    data = passed_data;
+}

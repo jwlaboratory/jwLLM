@@ -1,0 +1,58 @@
+{
+  "tests": 8,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "Tokenizer",
+      "tests": 6,
+      "testsuite": [
+        {
+          "name": "LoadsVocab",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 13
+        },
+        {
+          "name": "LoadsMergeList",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 20
+        },
+        {
+          "name": "MappingsAreInverses",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 26
+        },
+        {
+          "name": "ThrowsOnMissingVocabFile",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 35
+        },
+        {
+          "name": "DecodeConcatenatesTokenStrings",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 40
+        },
+        {
+          "name": "DISABLED_EncodeDecodeRoundTrip",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tokenizer.cpp",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "name": "Tensor",
+      "tests": 2,
+      "testsuite": [
+        {
+          "name": "StoresDimsAndData",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tensor.cpp",
+          "line": 5
+        },
+        {
+          "name": "ThrowsWhenDataSizeMismatchesDims",
+          "file": "\/Users\/shreybirmiwal\/projects\/jwlabs\/jwLLM\/tests\/test_tensor.cpp",
+          "line": 12
+        }
+      ]
+    }
+  ]
+}
