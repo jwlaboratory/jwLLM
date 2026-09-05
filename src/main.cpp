@@ -17,7 +17,7 @@ int main()
     cout << "User: ";
     string user_input;
 
-        getline(cin, user_input);
+    getline(cin, user_input);
     cout << tok.decode({15, 14, 13});
 
     return 0;

@@ -1,9 +1,0 @@
-Tokenizer.LoadsVocab 1 0.287086
-Tokenizer.LoadsMergeList 1 0.284621
-Tokenizer.MappingsAreInverses 1 0.295159
-Tokenizer.ThrowsOnMissingVocabFile 1 0.00794867
-Tokenizer.DecodeConcatenatesTokenStrings 1 0.279516
-Tokenizer.EncodeDecodeRoundTrip 0 0
-Tensor.StoresDimsAndData 1 0.00710288
-Tensor.ThrowsWhenDataSizeMismatchesDims 1 0.00659704
----

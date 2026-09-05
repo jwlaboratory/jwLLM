@@ -1,1 +1,0 @@
-/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/jwllm_tests.dir/tests/test_tokenizer.cpp.o CMakeFiles/jwllm_tests.dir/tests/test_tensor.cpp.o -o jwllm_tests  libjwllm.a lib/libgtest_main.a lib/libgtest.a

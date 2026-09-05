@@ -4,6 +4,8 @@
 We are building engine for
 https://huggingface.co/openai-community/gpt2
 
+External packages are not committed as header files in this repository; the Makefile downloads them into the build directory during setup. Include external headers normally in the source code, and add the corresponding package to the Makefile.
+
 ### Roadmap
 
 **Goal 1: Working inference engine that can run GPT-2**
@@ -50,19 +52,18 @@ In class: Intro to OS + syllabus + history
 
 
 ### Build instructions
-delete old build
+build the app
 ```
-rm -rf build
-```
-
-build
-```
-cmake -S . -B build
-cmake --build build
+make
 ```
 
 run
 ```
 ./build/my_app
+```
+
+run tests
+```
+make test
 ```
 

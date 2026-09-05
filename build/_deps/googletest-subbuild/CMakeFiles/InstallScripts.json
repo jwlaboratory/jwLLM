@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/shreybirmiwal/projects/jwlabs/jwLLM/build/_deps/googletest-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libjwllm.a CMakeFiles/jwllm.dir/src/tokenizer.cpp.o CMakeFiles/jwllm.dir/src/tensor.cpp.o
-/usr/bin/ranlib libjwllm.a
