@@ -43,7 +43,7 @@ Tokenizer::Tokenizer(unsigned int merge_list_size, string _mapping_json_path, st
         cur_priority += 1;
     }
     merge_f.close();
-    regex_splitter = std::regex("'s|'t|'re|'ve|'m|'ll|'d| ?[a-zA-Z]+| ?[0-9]+| ?[^\s\w]+|\s+(?!\S)|\s+");
+    regex_splitter = std::regex(R"('s|'t|'re|'ve|'m|'ll|'d| ?[a-zA-Z]+| ?[0-9]+| ?[^\s\w]+|\s+(?!\S)|\s+)");
 }
 
 vector<int> Tokenizer::encode(string in)
@@ -180,19 +180,14 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
             string candidate = symbols[i] + " " + symbols[i + 1];
 
             int prio;
-            if (merge_priority.find(candidate) == merge_priority.end())
-            {
-                prio = -1;
-            }
-            else
+            if (merge_priority.find(candidate) != merge_priority.end())
             {
                 prio = merge_priority[candidate];
-            }
-
-            if (prio != -1 && prio < lowest_pri)
-            {
-                lowest_pri = prio;
-                lowest_index = i;
+                if (prio < lowest_pri)
+                {
+                    lowest_pri = prio;
+                    lowest_index = i;
+                }
             }
         }
 
