@@ -17,5 +17,7 @@ public:
 
     std::vector<int> encode(std::string in);
     std::string decode(std::vector<int> vector);
-    std::vector<int> Tokenizer::tokenize_chunk(std::string);
+    std::vector<int> tokenize_chunk(std::string);
+
+    std::vector<std::string> regex_split(const std::string &input, const std::regex &re);
 };

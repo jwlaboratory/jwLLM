@@ -18,7 +18,12 @@ int main()
     string user_input;
 
     getline(cin, user_input);
-    cout << tok.decode({15, 14, 13});
+    std::vector<int> tokenized_input = tok.encode(user_input);
+    for (int tok : tokenized_input)
+    {
+        cout << tok << " ";
+    }
+    cout << tok.decode({15, 14, 13}) << std::endl;
 
     return 0;
 }

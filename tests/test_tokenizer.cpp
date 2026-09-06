@@ -4,10 +4,10 @@
 
 namespace
 {
-Tokenizer make_tokenizer()
-{
-    return Tokenizer(0, "data/vocab.json", "data/merges.txt");
-}
+    Tokenizer make_tokenizer()
+    {
+        return Tokenizer(0, "data/vocab.json", "data/merges.txt");
+    }
 } // namespace
 
 TEST(Tokenizer, LoadsVocab)
@@ -45,9 +45,9 @@ TEST(Tokenizer, DecodeConcatenatesTokenStrings)
 }
 
 // remove the DISABLED_ prefix once encode() is implemented
-TEST(Tokenizer, DISABLED_EncodeDecodeRoundTrip)
+TEST(Tokenizer, EncodeDecodeRoundTrip)
 {
     Tokenizer tok = make_tokenizer();
-    std::string input = "Hello world";
+    std::string input = "Hello world!!!";
     EXPECT_EQ(tok.decode(tok.encode(input)), input);
 }
