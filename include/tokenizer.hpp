@@ -13,11 +13,12 @@ public:
     std::unordered_map<std::string, int> merge_priority; // merge_char1 (space) merge_char2 : what priority
     std::regex regex_splitter;
 
-    Tokenizer(unsigned int merge_list_size, std::string _mapping_json_path, std::string _merge_txt_path);
+    Tokenizer(std::string _mapping_json_path, std::string _merge_txt_path);
 
     std::vector<int> encode(std::string in);
     std::string decode(std::vector<int> vector);
     std::vector<int> tokenize_chunk(std::string);
+    std::unordered_map<int, char32_t> byte2unicode();
 
     std::vector<std::string> regex_split(const std::string &input, const std::regex &re);
 };

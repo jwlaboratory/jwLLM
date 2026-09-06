@@ -9,4 +9,5 @@ public:
     std::vector<float> data;
 
     Tensor(std::vector<int> dims, std::vector<float> passed_data);
+    Tensor multiply(Tensor other);
 };

@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 using namespace std;
 
-Tokenizer::Tokenizer(unsigned int merge_list_size, string _mapping_json_path, string _merge_txt_path)
+Tokenizer::Tokenizer(string _mapping_json_path, string _merge_txt_path)
 {
     ifstream f(_mapping_json_path);
     if (!f.is_open())
@@ -164,7 +164,7 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
     // return final answ;
 
     std::vector<std::string> symbols;
-    for (int i = 0; i < chunk.size(); i++)
+    for (size_t i = 0; i < chunk.size(); i++)
     {
         symbols.push_back(std::string{chunk[i]});
     }
@@ -175,7 +175,7 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
         int lowest_index = -1;
         int lowest_pri = 9999999;
 
-        for (int i = 0; i < symbols.size() - 1; i++)
+        for (size_t i = 0; i < symbols.size() - 1; i++)
         {
             string candidate = symbols[i] + " " + symbols[i + 1];
 
@@ -242,3 +242,41 @@ std::vector<std::string> Tokenizer::regex_split(const std::string &input, const 
     }
     return tokens;
 }
+
+std::unordered_map<int, char32_t> Tokenizer::byte2unicode()
+{
+    unordered_map<int, char32_t> output_map;
+
+    // these are NORMAL ranges, ie normal characters, and should maintain the same value
+    for (int i = 33; i <= 126; ++i)
+        output_map[i] = i;
+    for (int i = 161; i <= 172; ++i)
+        output_map[i] = i;
+    for (int i = 174; i <= 255; ++i)
+        output_map[i] = i;
+
+    // abnormal ranges
+    int n = 0;
+    for (int i = 0; i < 256; i++)
+    {
+        if (output_map.find(i) == output_map.end())
+        {
+            // we have a special case!
+            output_map[i] = n + 256; // we do this to avoid ascii and move it into a safe range
+            n++;
+        }
+    }
+    return output_map;
+}
+
+// _chr = unichr if sys.version_info[0] == 2 else chr
+// bs = list(range(ord("!"), ord("~")+1))+list(range(ord("¡"), ord("¬")+1))+list(range(ord("®"), ord("ÿ")+1))
+// cs = bs[:]
+// n = 0
+// for b in range(2**8):
+//     if b not in bs:
+//         bs.append(b)
+//         cs.append(2**8+n)
+//         n += 1
+// cs = [_chr(n) for n in cs]
+// return dict(zip(bs, cs))

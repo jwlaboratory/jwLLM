@@ -11,7 +11,7 @@ using std::vector;
 
 int main()
 {
-    Tokenizer tok(0, "data/vocab.json", "data/merges.txt");
+    Tokenizer tok("data/vocab.json", "data/merges.txt");
     cout << "loaded " << tok.sToT.size() << " tokens" << endl;
 
     cout << "User: ";

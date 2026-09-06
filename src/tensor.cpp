@@ -7,8 +7,8 @@ using std::vector;
 Tensor::Tensor(vector<int> dims, vector<float> passed_data)
 {
 
-    int max_total = dims[0];
-    for (int i = 1; i < dims.size(); i++)
+    size_t max_total = dims[0];
+    for (size_t i = 1; i < dims.size(); i++)
     {
         max_total *= dims[i];
     }
@@ -19,4 +19,10 @@ Tensor::Tensor(vector<int> dims, vector<float> passed_data)
 
     dimension_sizes = dims;
     data = passed_data;
+}
+
+Tensor Tensor::multiply(Tensor other)
+{
+    return other;
+    // check dims!
 }

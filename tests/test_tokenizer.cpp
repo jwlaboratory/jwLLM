@@ -6,7 +6,7 @@ namespace
 {
     Tokenizer make_tokenizer()
     {
-        return Tokenizer(0, "data/vocab.json", "data/merges.txt");
+        return Tokenizer("data/vocab.json", "data/merges.txt");
     }
 } // namespace
 
@@ -34,7 +34,7 @@ TEST(Tokenizer, MappingsAreInverses)
 
 TEST(Tokenizer, ThrowsOnMissingVocabFile)
 {
-    EXPECT_THROW(Tokenizer(0, "data/does_not_exist.json", "data/merges.txt"), std::runtime_error);
+    EXPECT_THROW(Tokenizer("data/does_not_exist.json", "data/merges.txt"), std::runtime_error);
 }
 
 TEST(Tokenizer, DecodeConcatenatesTokenStrings)
