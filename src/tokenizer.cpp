@@ -189,7 +189,7 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
                 prio = merge_priority[candidate];
             }
 
-            if (prio < lowest_pri)
+            if (prio != -1 && prio < lowest_pri)
             {
                 lowest_pri = prio;
                 lowest_index = i;
