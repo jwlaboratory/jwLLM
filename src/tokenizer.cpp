@@ -48,18 +48,46 @@ Tokenizer::Tokenizer(unsigned int merge_list_size, string _mapping_json_path, st
 
 vector<int> Tokenizer::encode(string in)
 {
+    std::vector<int> final_tokens;
 
     // 1 apply the regex
+    std::vector<std::string> split_input_string = regex_split(in, regex_splitter);
 
-    // 2 for each string
-    // -> split into each char by char array
-    // -> for loop through array
+    for (std::string chunk : split_input_string)
+    {
+        // run per chunk the tokenization
+
+        std::vector<int> tokenized_chunk = tokenize_chunk(chunk);
+
+        for (int tokenized_chunk_nums : tokenized_chunk)
+        {
+            final_tokens.push_back(tokenized_chunk_nums);
+        }
+    }
+    return final_tokens;
+
+    return {};
+}
+
+std::vector<int> Tokenizer::tokenize_chunk(std::string)
+{
+    // we should keep a priority queue that keeps the adjacent tokens and the score
     // -> put closest 2 together, lookup
     // -> keep scores : arraypos1, arraypos2
     // -> after loop, merge lowest score, delete extra entry in array or mark it as no longer used (so its skipped)
     // complete until no more scores
 
-    return {};
+    struct MergeCandidate
+    {
+        int priority_score;
+        int left_index;
+        int right_index;
+
+        bool operator>(const MergeCandidate &other) const
+        {
+            return priority_score > other.priority_score;
+        }
+    };
 }
 
 string Tokenizer::decode(vector<int> vector)
@@ -70,4 +98,22 @@ string Tokenizer::decode(vector<int> vector)
         s += tToS[v];
     }
     return s;
+}
+
+// from the internet: function to split into array based on regex
+std::vector<std::string> regex_split(const std::string &input, const std::regex &re)
+{
+    // Pass 0 instead of -1 to capture the actual regex matches (tokens)
+    std::sregex_token_iterator first{input.begin(), input.end(), re, 0};
+    std::sregex_token_iterator last;
+
+    std::vector<std::string> tokens;
+    for (auto it = first; it != last; ++it)
+    {
+        if (!it->str().empty())
+        {
+            tokens.push_back(*it);
+        }
+    }
+    return tokens;
 }

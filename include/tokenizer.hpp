@@ -17,4 +17,5 @@ public:
 
     std::vector<int> encode(std::string in);
     std::string decode(std::vector<int> vector);
+    std::vector<int> Tokenizer::tokenize_chunk(std::string);
 };
