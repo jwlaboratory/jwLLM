@@ -11,25 +11,27 @@ GTEST_DIR := build/deps/googletest
 GTEST_STAMP := $(GTEST_DIR)/.downloaded
 
 LIB_SOURCES := $(filter-out src/main.cpp,$(wildcard src/*.cpp))
-LIB_OBJECTS := $(patsubst src/%.cpp,build/%.o,$(LIB_SOURCES))
-APP_OBJECTS := build/main.o
+LIB_OBJECTS := $(patsubst src/%.cpp,build/obj/%.o,$(LIB_SOURCES))
+APP_OBJECTS := build/obj/main.o
 
 TEST_SOURCES := $(wildcard tests/test_*.cpp)
-TEST_OBJECTS := $(patsubst tests/%.cpp,build/%.o,$(TEST_SOURCES)) build/gtest-all.o build/gtest_main.o
+TEST_OBJECTS := $(patsubst tests/%.cpp,build/obj/%.o,$(TEST_SOURCES)) build/obj/gtest-all.o build/obj/gtest_main.o
 
 .PHONY: all my_app test clean
 
 all: my_app
 
-my_app: build/my_app
+my_app: build/bin/my_app
 
-build/my_app: $(LIB_OBJECTS) $(APP_OBJECTS)
+build/bin/my_app: $(LIB_OBJECTS) $(APP_OBJECTS)
+	mkdir -p $(@D)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-test: build/jwllm_tests
-	./build/jwllm_tests
+test: build/bin/jwllm_tests
+	./build/bin/jwllm_tests
 
-build/jwllm_tests: $(LIB_OBJECTS) $(TEST_OBJECTS)
+build/bin/jwllm_tests: $(LIB_OBJECTS) $(TEST_OBJECTS)
+	mkdir -p $(@D)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -pthread -o $@
 
 $(JSON_HEADER):
@@ -47,19 +49,19 @@ $(GTEST_STAMP):
 	mv build/deps/googletest-$(GTEST_VERSION) $(GTEST_DIR)
 	touch $@
 
-build/%.o: src/%.cpp $(JSON_HEADER)
+build/obj/%.o: src/%.cpp $(JSON_HEADER)
 	mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-build/test_%.o: tests/test_%.cpp $(JSON_HEADER) $(GTEST_STAMP)
+build/obj/test_%.o: tests/test_%.cpp $(JSON_HEADER) $(GTEST_STAMP)
 	mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(GTEST_DIR)/googletest/include -c $< -o $@
 
-build/gtest-all.o: $(GTEST_DIR)/googletest/src/gtest-all.cc $(GTEST_STAMP)
+build/obj/gtest-all.o: $(GTEST_DIR)/googletest/src/gtest-all.cc $(GTEST_STAMP)
 	mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(GTEST_DIR)/googletest -I$(GTEST_DIR)/googletest/include -c $< -o $@
 
-build/gtest_main.o: $(GTEST_DIR)/googletest/src/gtest_main.cc $(GTEST_STAMP)
+build/obj/gtest_main.o: $(GTEST_DIR)/googletest/src/gtest_main.cc $(GTEST_STAMP)
 	mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(GTEST_DIR)/googletest/include -c $< -o $@
 

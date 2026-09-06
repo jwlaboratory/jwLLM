@@ -12,6 +12,11 @@ External packages are not committed as header files in this repository; the Make
 Target: Week 1 / Aug 24-Aug 29
 In class: Intro to OS + syllabus + history
 
+
+-> mmap from class
+-> processes (fork, etc)
+
+
 #### Tokenization
 
 - [ ] Implement GPT-2 byte-level text preprocessing
@@ -59,7 +64,7 @@ make
 
 run
 ```
-./build/my_app
+./build/bin/my_app
 ```
 
 run tests
