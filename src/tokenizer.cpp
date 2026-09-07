@@ -44,6 +44,10 @@ Tokenizer::Tokenizer(string _mapping_json_path, string _merge_txt_path)
     }
     merge_f.close();
     regex_splitter = std::regex(R"('s|'t|'re|'ve|'m|'ll|'d| ?[a-zA-Z]+| ?[0-9]+| ?[^\s\w]+|\s+(?!\S)|\s+)");
+
+    // unordered_map<int, char32_t> byte2unicode_data;
+    // unordered_map<char32_t, int> unicode2byte_data;
+    byte2unicode();
 }
 
 vector<int> Tokenizer::encode(string in)
@@ -166,7 +170,13 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
     std::vector<std::string> symbols;
     for (size_t i = 0; i < chunk.size(); i++)
     {
-        symbols.push_back(std::string{chunk[i]});
+
+        unsigned char b = (unsigned char)chunk[i];
+        // unsighend so bytes > 127 dont break
+        char32_t cp = byte2unicode_data[b];
+        // here we get the value correctly, if it was unsafe number, it gets re routed to a safe number
+        // we now gotta make it back into a utf8
+        symbols.push_back(codepoint_to_utf8(cp));
     }
 
     while (symbols.size() > 1)
@@ -217,12 +227,33 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
 
 string Tokenizer::decode(vector<int> vector)
 {
-    string s;
+    std::string disguised;
     for (auto &v : vector)
+        disguised += tToS[v];
+
+    std::string raw;
+    size_t i = 0;
+    while (i < disguised.size())
     {
-        s += tToS[v];
+        unsigned char b = disguised[i];
+        char32_t cp;
+        size_t len;
+
+        if ((b & 0x80) == 0x00) // 0xxxxxxx → 1 byte
+        {
+            cp = b;
+            len = 1;
+        }
+        else // 110xxxxx 10xxxxxx → 2 bytes
+        {
+            cp = ((b & 0x1F) << 6) | (disguised[i + 1] & 0x3F);
+            len = 2;
+        }
+
+        raw += (char)unicode2byte_data[cp];
+        i += len;
     }
-    return s;
+    return raw;
 }
 
 // from the internet: function to split into array based on regex
@@ -243,30 +274,38 @@ std::vector<std::string> Tokenizer::regex_split(const std::string &input, const 
     return tokens;
 }
 
-std::unordered_map<int, char32_t> Tokenizer::byte2unicode()
+void Tokenizer::byte2unicode()
 {
-    unordered_map<int, char32_t> output_map;
 
     // these are NORMAL ranges, ie normal characters, and should maintain the same value
     for (int i = 33; i <= 126; ++i)
-        output_map[i] = i;
+    {
+        byte2unicode_data[i] = i;
+        unicode2byte_data[i] = i;
+    }
     for (int i = 161; i <= 172; ++i)
-        output_map[i] = i;
+    {
+        byte2unicode_data[i] = i;
+        unicode2byte_data[i] = i;
+    }
     for (int i = 174; i <= 255; ++i)
-        output_map[i] = i;
+    {
+        byte2unicode_data[i] = i;
+        unicode2byte_data[i] = i;
+    }
 
     // abnormal ranges
     int n = 0;
     for (int i = 0; i < 256; i++)
     {
-        if (output_map.find(i) == output_map.end())
+        if (byte2unicode_data.find(i) == byte2unicode_data.end())
         {
             // we have a special case!
-            output_map[i] = n + 256; // we do this to avoid ascii and move it into a safe range
+            byte2unicode_data[i] = n + 256; // we do this to avoid ascii and move it into a safe range
+            unicode2byte_data[n + 256] = i;
             n++;
         }
     }
-    return output_map;
 }
 
 // _chr = unichr if sys.version_info[0] == 2 else chr
@@ -280,3 +319,21 @@ std::unordered_map<int, char32_t> Tokenizer::byte2unicode()
 //         n += 1
 // cs = [_chr(n) for n in cs]
 // return dict(zip(bs, cs))
+
+// func copied from gpt.
+// itll basically do this. if its a 1 byte, itll keep it. if its a 2byte according to the utf8 pattern (>)
+// if its 2 byte, itll do the pattern utf8 wants for 2 byte. ie wraps with 11000000 and 10000000
+std::string Tokenizer::codepoint_to_utf8(char32_t cp)
+{
+    std::string out;
+    if (cp < 0x80)
+    {
+        out += (char)cp;
+    }
+    else
+    {
+        out += (char)(0xC0 | (cp >> 6));
+        out += (char)(0x80 | (cp & 0x3F));
+    }
+    return out;
+}
