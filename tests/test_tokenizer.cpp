@@ -59,3 +59,10 @@ TEST(Tokenizer, EncodeTest)
     std::vector<int> output = {15496, 616, 1438, 318, 427, 4364, 703, 389, 345, 1804, 257, 28121, 73, 646, 5145, 334, 4730, 20362, 73, 21533, 374, 764, 292, 375, 79, 1065, 43637, 26, 3664, 73, 16, 1341, 257, 1129, 21015, 2438, 5145, 2162, 10185};
     EXPECT_EQ(tok.encode(input), output);
 }
+
+TEST(Tokenizer, EncodeDecodeRoundTrip2)
+{
+    Tokenizer tok = make_tokenizer();
+    std::string input = "Hello world!! ajjj ji♻︎🧠1923j nns 🥷🏿🤦‍♂️!";
+    EXPECT_EQ(tok.decode(tok.encode(input)), input);
+}
