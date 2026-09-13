@@ -1,5 +1,5 @@
 #include "matrix.hpp"
-
+#include <cmath>
 #include <stdexcept>
 
 using std::vector;
@@ -61,4 +61,53 @@ Matrix Matrix::addition(const Matrix &other)
     }
 
     return Matrix(rows, cols, out);
+}
+
+Matrix Matrix::transpose()
+{
+    // we store row x col
+    // we need to swap to col x row
+
+    // ie transpose:
+    // [a,b,c,d,e,f]
+    // 2x3 --> 3x2
+    //[a, d, b, e, c, f]
+
+    // 0,1 --> 1,0
+    //
+
+    vector<float> out(this->data.size());
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < this->cols; g++)
+        {
+            int newRow = g;
+            int newCol = i;
+            int total_per_row_new = this->rows;
+
+            out[newRow * total_per_row_new + newCol] = this->data[i * this->cols + g];
+        }
+    }
+    return Matrix(this->cols, this->rows, out);
+}
+
+Matrix Matrix::multiply_scalar(float scalar)
+{
+    vector<float> out(this->data.size());
+    for (int i = 0; i < this->data.size(); i++)
+    {
+        out[i] = this->data[i] * scalar;
+    }
+    return Matrix(this->rows, this->cols, out);
+}
+
+Matrix Matrix::gelu()
+{
+    vector<float> out(this->data.size());
+    for (int i = 0; i < this->data.size(); i++)
+    {
+        float x = this->data[i];
+        out[i] = 0.5f * x * (1.0f + std::tanh(0.7978845608f * (x + 0.044715f * x * x * x)));
+    }
+    return Matrix(this->rows, this->cols, out);
 }
