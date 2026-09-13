@@ -191,12 +191,52 @@ Matrix Matrix::softmax_rows()
     return Matrix(this->rows, this->cols, out);
 }
 
+// given a matrix, give the data in col start, start+1, start+2... start+len
 Matrix Matrix::slice_cols(int start, int len)
 {
-    throw std::logic_error("not implemented");
+    if (start < 0 || len <= 0 || start + len > this->cols)
+        throw std::invalid_argument("slice out of range");
+
+    vector<float> out(this->rows * len);
+    int index = 0;
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < this->cols; g++)
+        {
+            if (start <= g && g < start + len)
+            {
+                out[index] = this->data[i * this->cols + g];
+                index++;
+            }
+        }
+    }
+    return Matrix(this->rows, len, out);
 }
 
 Matrix Matrix::concat_cols(const Matrix &other)
 {
-    throw std::logic_error("not implemented");
+
+    if (other.rows != this->rows)
+    {
+        throw std::invalid_argument("got to have same rows for concat");
+    }
+
+    vector<float> out(this->data.size() + other.data.size());
+    int max_len = this->cols + other.cols;
+
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < max_len; g++)
+        {
+            if (g < this->cols)
+            {
+                out[i * max_len + g] = this->data[i * this->cols + g];
+            }
+            else
+            {
+                out[i * max_len + g] = other.data[i * other.cols + g - this->cols];
+            }
+        }
+    }
+    return Matrix(this->rows, max_len, out);
 }
