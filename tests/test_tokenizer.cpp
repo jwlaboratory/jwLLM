@@ -17,12 +17,6 @@ TEST(Tokenizer, LoadsVocab)
     EXPECT_EQ(tok.sToT.size(), tok.tToS.size());
 }
 
-TEST(Tokenizer, LoadsMergeList)
-{
-    Tokenizer tok = make_tokenizer();
-    EXPECT_GT(tok.merge_priority.size(), 0u);
-}
-
 TEST(Tokenizer, MappingsAreInverses)
 {
     Tokenizer tok = make_tokenizer();

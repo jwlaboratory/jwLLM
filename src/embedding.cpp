@@ -44,3 +44,42 @@ Embedding::Embedding(std::string file_path_safetensors)
     WORD_TOKEN_EMBEDDING = load_tensor("transformer.wte.weight");
     WORD_POSITIONAL_EMBEDDING = load_tensor("transformer.wpe.weight");
 }
+
+Matrix Embedding::tokenized_to_embed(const std::vector<int> &token_ids)
+{
+    int d_model = WORD_TOKEN_EMBEDDING.cols;
+    std::vector<float> out(token_ids.size() * d_model);
+
+    for (size_t i = 0; i < token_ids.size(); i++)
+    {
+        int token_id = token_ids[i];
+        std::vector<float> embed_row(d_model);
+
+        for (int g = 0; g < embed_row.size(); g++)
+        {
+            out[i * d_model + g] = WORD_TOKEN_EMBEDDING.data[token_id * d_model + g];
+            // out is flat array, word_token embedding is also flat array
+        }
+    }
+
+    return Matrix(token_ids.size(), d_model, out);
+}
+
+void Embedding::apply_positional_encoding(Matrix &token_embeddings)
+{
+    // seq len rows
+    // dmodel cols
+
+    // WORD_POSITIONAL_EMBEDDING is a table of size: position rows, dmodel cols
+
+    int seq_len = token_embeddings.rows;
+    int dmodel = token_embeddings.cols;
+
+    for (int i = 0; i < seq_len; i++)
+    {
+        for (int g = 0; g < token_embeddings.cols; g++)
+        {
+            token_embeddings.data[i * dmodel + g] += WORD_POSITIONAL_EMBEDDING.data[i * dmodel + g];
+        }
+    }
+}

@@ -14,9 +14,10 @@ public:
     Matrix encode(std::string in);
     std::string decode(Matrix in);
 
+    std::unordered_map<std::string, int> sToT; // string to token#
+    std::unordered_map<int, std::string> tToS; // token# to string
+
 private:
-    std::unordered_map<std::string, int> sToT;           // string to token#
-    std::unordered_map<int, std::string> tToS;           // token# to string
     std::unordered_map<std::string, int> merge_priority; // merge_char1 (space) merge_char2 : what priority
     std::regex regex_splitter;
     std::unordered_map<int, char32_t> byte2unicode_data;
