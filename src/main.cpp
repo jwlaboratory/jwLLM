@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "matrix.hpp"
 #include "tokenizer.hpp"
 
 using std::cin;
@@ -18,10 +18,10 @@ int main()
     string user_input;
 
     getline(cin, user_input);
-    std::vector<int> tokenized_input = tok.encode(user_input);
-    for (int tok : tokenized_input)
+    Matrix tokenized_input = tok.encode(user_input);
+    for (float token : tokenized_input.data)
     {
-        cout << tok << " ";
+        cout << static_cast<int>(token) << " ";
     }
 
     // tokenize

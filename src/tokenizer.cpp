@@ -68,7 +68,7 @@ Matrix Tokenizer::encode(string in)
             final_tokens.push_back((float)tokenized_chunk_nums);
         }
     }
-    Matrix out = Matrix(1, in.length(), final_tokens);
+    Matrix out = Matrix(1, final_tokens.size(), final_tokens);
     return out;
 }
 
@@ -232,7 +232,7 @@ string Tokenizer::decode(Matrix in)
     std::string disguised;
 
     for (auto &v : vector)
-        disguised += tToS[(int)v];
+        disguised += tToS.at(static_cast<int>(v));
 
     std::string raw;
     size_t i = 0;

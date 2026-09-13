@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-
+#include "matrix.hpp"
 #include "tokenizer.hpp"
 
 namespace
@@ -40,8 +40,13 @@ TEST(Tokenizer, ThrowsOnMissingVocabFile)
 TEST(Tokenizer, DecodeConcatenatesTokenStrings)
 {
     Tokenizer tok = make_tokenizer();
-    std::string expected = tok.tToS.at(15) + tok.tToS.at(14) + tok.tToS.at(13);
-    EXPECT_EQ(tok.decode({15, 14, 13}), expected);
+
+    Matrix encoded(1, 3, {15.0f, 14.0f, 13.0f});
+    std::string expected = tok.tToS.at(15) +
+                           tok.tToS.at(14) +
+                           tok.tToS.at(13);
+
+    EXPECT_EQ(tok.decode(encoded), expected);
 }
 
 // remove the DISABLED_ prefix once encode() is implemented
@@ -56,8 +61,18 @@ TEST(Tokenizer, EncodeTest)
 {
     Tokenizer tok = make_tokenizer();
     std::string input = "Hello my name is shrey how are you doing ajasjdu ! uaksjljnm r .asodp12031; salj1 sk a19 python code ! ;!!!";
-    std::vector<int> output = {15496, 616, 1438, 318, 427, 4364, 703, 389, 345, 1804, 257, 28121, 73, 646, 5145, 334, 4730, 20362, 73, 21533, 374, 764, 292, 375, 79, 1065, 43637, 26, 3664, 73, 16, 1341, 257, 1129, 21015, 2438, 5145, 2162, 10185};
-    EXPECT_EQ(tok.encode(input), output);
+
+    std::vector<float> expected_data = {
+        15496, 616, 1438, 318, 427, 4364, 703, 389, 345, 1804,
+        257, 28121, 73, 646, 5145, 334, 4730, 20362, 73, 21533,
+        374, 764, 292, 375, 79, 1065, 43637, 26, 3664, 73, 16,
+        1341, 257, 1129, 21015, 2438, 5145, 2162, 10185};
+
+    Matrix actual = tok.encode(input);
+
+    EXPECT_EQ(actual.rows, 1);
+    EXPECT_EQ(actual.cols, expected_data.size());
+    EXPECT_EQ(actual.data, expected_data);
 }
 
 TEST(Tokenizer, EncodeDecodeRoundTrip2)
