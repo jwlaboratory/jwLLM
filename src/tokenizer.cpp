@@ -1,5 +1,5 @@
 #include "tokenizer.hpp"
-
+#include "matrix.hpp"
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -50,9 +50,9 @@ Tokenizer::Tokenizer(string _mapping_json_path, string _merge_txt_path)
     byte2unicode();
 }
 
-vector<int> Tokenizer::encode(string in)
+Matrix Tokenizer::encode(string in)
 {
-    std::vector<int> final_tokens;
+    std::vector<float> final_tokens;
 
     // 1 apply the regex
     std::vector<std::string> split_input_string = regex_split(in, regex_splitter);
@@ -65,10 +65,11 @@ vector<int> Tokenizer::encode(string in)
 
         for (int tokenized_chunk_nums : tokenized_chunk)
         {
-            final_tokens.push_back(tokenized_chunk_nums);
+            final_tokens.push_back((float)tokenized_chunk_nums);
         }
     }
-    return final_tokens;
+    Matrix out = Matrix(1, in.length(), final_tokens);
+    return out;
 }
 
 std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
@@ -225,11 +226,13 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
     return output;
 }
 
-string Tokenizer::decode(vector<int> vector)
+string Tokenizer::decode(Matrix in)
 {
+    std::vector<float> vector = in.data;
     std::string disguised;
+
     for (auto &v : vector)
-        disguised += tToS[v];
+        disguised += tToS[(int)v];
 
     std::string raw;
     size_t i = 0;

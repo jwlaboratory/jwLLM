@@ -23,7 +23,16 @@ int main()
     {
         cout << tok << " ";
     }
-    cout << tok.decode({15, 14, 13}) << std::endl;
+
+    // tokenize
+    // embed
+    // apply positional encoding
+
+    // loop 12 times
+    // transformer
+    // FFN
+
+    // layernorm, final language head
 
     return 0;
 }

@@ -17,8 +17,8 @@ public:
 
     Tokenizer(std::string _mapping_json_path, std::string _merge_txt_path);
 
-    std::vector<int> encode(std::string in);
-    std::string decode(std::vector<int> vector);
+    Matrix encode(std::string in);
+    std::string decode(Matrix in);
     std::vector<int> tokenize_chunk(std::string);
     void byte2unicode();
     std::string codepoint_to_utf8(char32_t cp);

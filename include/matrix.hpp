@@ -1,0 +1,15 @@
+#pragma once
+
+#include <vector>
+
+class Matrix
+{
+public:
+    int rows;
+    int cols;
+    std::vector<float> data;
+
+    Matrix();
+    Matrix(int rows, int cols, std::vector<float> passed_data);
+    Matrix multiply(Matrix other);
+};
