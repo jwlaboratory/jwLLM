@@ -114,30 +114,57 @@ Matrix Matrix::gelu()
 
 Matrix Matrix::broadcast_add_row(const Matrix &row)
 {
-    // TODO: implement
-    throw std::logic_error("not implemented");
+    // we have a matrix [seqlen x dmodel]
+    // we want to add a bias of size [dmodel]
+    // we broadcast so this adds to each row
+
+    if (row.rows != 1 || this->cols != row.cols)
+    {
+        throw std::invalid_argument("to broadcast add, must be row size =1");
+    }
+
+    vector<float> out(this->data.size());
+
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < this->cols; g++)
+        {
+            out[i * this->cols + g] = this->data[i * this->cols + g] + row.data[g];
+        }
+    }
+    return Matrix(this->rows, this->cols, out);
 }
 
 Matrix Matrix::broadcast_multiply_row(const Matrix &row)
 {
-    // TODO: implement
-    throw std::logic_error("not implemented");
+    if (row.rows != 1 || this->cols != row.cols)
+    {
+        throw std::invalid_argument("to broadcast add, must be row size =1");
+    }
+
+    vector<float> out(this->data.size());
+
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < this->cols; g++)
+        {
+            out[i * this->cols + g] = this->data[i * this->cols + g] * row.data[g];
+        }
+    }
+    return Matrix(this->rows, this->cols, out);
 }
 
 Matrix Matrix::softmax_rows()
 {
-    // TODO: implement
     throw std::logic_error("not implemented");
 }
 
 Matrix Matrix::slice_cols(int start, int len)
 {
-    // TODO: implement
     throw std::logic_error("not implemented");
 }
 
 Matrix Matrix::concat_cols(const Matrix &other)
 {
-    // TODO: implement
     throw std::logic_error("not implemented");
 }
