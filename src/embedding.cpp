@@ -41,28 +41,29 @@ Embedding::Embedding(std::string file_path_safetensors)
         return Matrix(shape[0], shape[1], weights);
     };
 
-    WORD_TOKEN_EMBEDDING = load_tensor("transformer.wte.weight");
-    WORD_POSITIONAL_EMBEDDING = load_tensor("transformer.wpe.weight");
+    WORD_TOKEN_EMBEDDING = load_tensor("wte.weight");
+    WORD_POSITIONAL_EMBEDDING = load_tensor("wpe.weight");
 }
 
-Matrix Embedding::tokenized_to_embed(const std::vector<int> &token_ids)
+Matrix Embedding::tokenized_to_embed(const Matrix &token_ids)
 {
+    // token_ids is a single sequence: 1 row, seq_len cols, ids stored as floats.
     int d_model = WORD_TOKEN_EMBEDDING.cols;
-    std::vector<float> out(token_ids.size() * d_model);
+    int seq_len = token_ids.cols;
+    std::vector<float> out(seq_len * d_model);
 
-    for (size_t i = 0; i < token_ids.size(); i++)
+    for (int i = 0; i < seq_len; i++)
     {
-        int token_id = token_ids[i];
-        std::vector<float> embed_row(d_model);
+        int token_id = static_cast<int>(token_ids.data[i]);
 
-        for (int g = 0; g < embed_row.size(); g++)
+        for (int g = 0; g < d_model; g++)
         {
             out[i * d_model + g] = WORD_TOKEN_EMBEDDING.data[token_id * d_model + g];
             // out is flat array, word_token embedding is also flat array
         }
     }
 
-    return Matrix(token_ids.size(), d_model, out);
+    return Matrix(seq_len, d_model, out);
 }
 
 void Embedding::apply_positional_encoding(Matrix &token_embeddings)

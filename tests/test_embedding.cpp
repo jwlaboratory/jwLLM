@@ -38,8 +38,8 @@ namespace
         uint64_t wpe_bytes = kWpe.size() * sizeof(float);
 
         json header = {
-            {"transformer.wte.weight", {{"dtype", "F32"}, {"shape", {4, 3}}, {"data_offsets", {0, wte_bytes}}}},
-            {"transformer.wpe.weight", {{"dtype", "F32"}, {"shape", {5, 3}}, {"data_offsets", {wte_bytes, wte_bytes + wpe_bytes}}}},
+            {"wte.weight", {{"dtype", "F32"}, {"shape", {4, 3}}, {"data_offsets", {0, wte_bytes}}}},
+            {"wpe.weight", {{"dtype", "F32"}, {"shape", {5, 3}}, {"data_offsets", {wte_bytes, wte_bytes + wpe_bytes}}}},
         };
         std::string header_str = header.dump();
         uint64_t header_len = header_str.size();
@@ -68,7 +68,7 @@ TEST(Embedding, TokenizedToEmbedLooksUpCorrectRows)
 {
     Embedding emb = make_embedding();
 
-    Matrix result = emb.tokenized_to_embed({2, 0, 3});
+    Matrix result = emb.tokenized_to_embed(Matrix(1, 3, {2.0f, 0.0f, 3.0f}));
 
     EXPECT_EQ(result.rows, 3);
     EXPECT_EQ(result.cols, 3);
@@ -81,7 +81,7 @@ TEST(Embedding, ApplyPositionalEncodingAddsRatherThanOverwrites)
 {
     Embedding emb = make_embedding();
 
-    Matrix embeddings = emb.tokenized_to_embed({1, 2});
+    Matrix embeddings = emb.tokenized_to_embed(Matrix(1, 2, {1.0f, 2.0f}));
     emb.apply_positional_encoding(embeddings);
 
     // token embedding for id 1 is row1 of wte, plus wpe row0 (position 0)
@@ -101,8 +101,8 @@ TEST(Embedding, ApplyPositionalEncodingKeepsDifferentTokensDistinguishable)
 
     // Two different tokens at the same position (0) must not collapse to
     // the same vector after positional encoding is applied.
-    Matrix a = emb.tokenized_to_embed({0});
-    Matrix b = emb.tokenized_to_embed({3});
+    Matrix a = emb.tokenized_to_embed(Matrix(1, 1, {0.0f}));
+    Matrix b = emb.tokenized_to_embed(Matrix(1, 1, {3.0f}));
 
     emb.apply_positional_encoding(a);
     emb.apply_positional_encoding(b);

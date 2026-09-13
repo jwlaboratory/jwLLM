@@ -7,7 +7,7 @@ class Embedding
 {
 public:
     Embedding(std::string file_path_safe_tensors);
-    Matrix tokenized_to_embed(const std::vector<int> &token_ids);
+    Matrix tokenized_to_embed(const Matrix &token_ids);
     void apply_positional_encoding(Matrix &token_embeddings);
 
 private:

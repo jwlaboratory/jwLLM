@@ -26,3 +26,6 @@ improvements:
 
 
 
+perf1: mmap file loading, mmap to share compute parent child
+
+perf2: ++ pre/post, matrix cache order, 

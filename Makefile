@@ -17,13 +17,13 @@ APP_OBJECTS := build/obj/main.o
 TEST_SOURCES := $(wildcard tests/test_*.cpp)
 TEST_OBJECTS := $(patsubst tests/%.cpp,build/obj/%.o,$(TEST_SOURCES)) build/obj/gtest-all.o build/obj/gtest_main.o
 
-.PHONY: all my_app test clean
+.PHONY: all jwLLM test clean
 
-all: my_app
+all: jwLLM
 
-my_app: build/bin/my_app
+jwLLM: build/bin/jwLLM
 
-build/bin/my_app: $(LIB_OBJECTS) $(APP_OBJECTS)
+build/bin/jwLLM: $(LIB_OBJECTS) $(APP_OBJECTS)
 	mkdir -p $(@D)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
