@@ -9,6 +9,12 @@
 class Tokenizer
 {
 public:
+    Tokenizer(std::string _mapping_json_path, std::string _merge_txt_path);
+
+    Matrix encode(std::string in);
+    std::string decode(Matrix in);
+
+private:
     std::unordered_map<std::string, int> sToT;           // string to token#
     std::unordered_map<int, std::string> tToS;           // token# to string
     std::unordered_map<std::string, int> merge_priority; // merge_char1 (space) merge_char2 : what priority
@@ -16,13 +22,8 @@ public:
     std::unordered_map<int, char32_t> byte2unicode_data;
     std::unordered_map<char32_t, int> unicode2byte_data;
 
-    Tokenizer(std::string _mapping_json_path, std::string _merge_txt_path);
-
-    Matrix encode(std::string in);
-    std::string decode(Matrix in);
     std::vector<int> tokenize_chunk(std::string);
     void byte2unicode();
     std::string codepoint_to_utf8(char32_t cp);
-
     std::vector<std::string> regex_split(const std::string &input, const std::regex &re);
 };

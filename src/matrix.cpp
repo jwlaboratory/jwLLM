@@ -4,6 +4,8 @@
 
 using std::vector;
 
+Matrix::Matrix() : rows(0), cols(0) {}
+
 Matrix::Matrix(int rows, int cols, vector<float> passed_data)
 {
 
