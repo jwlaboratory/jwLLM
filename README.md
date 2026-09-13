@@ -14,7 +14,7 @@ plans: (mappign OS concepts to project)
 -> CPU scheduling : batch scheduling 
 
 
-External packages are not committed as header files in this repository; the Makefile downloads them into the build directory during setup. Include external headers normally in the source code, and add the corresponding package to the Makefile.
+External packages are not committed as header files in this repository; the Makefile  them into the build directory during setup. Include external headers nordownloadsmally in the source code, and add the corresponding package to the Makefile.
 
 
 
