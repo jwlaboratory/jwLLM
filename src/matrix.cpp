@@ -111,3 +111,33 @@ Matrix Matrix::gelu()
     }
     return Matrix(this->rows, this->cols, out);
 }
+
+Matrix Matrix::broadcast_add_row(const Matrix &row)
+{
+    // TODO: implement
+    throw std::logic_error("not implemented");
+}
+
+Matrix Matrix::broadcast_multiply_row(const Matrix &row)
+{
+    // TODO: implement
+    throw std::logic_error("not implemented");
+}
+
+Matrix Matrix::softmax_rows()
+{
+    // TODO: implement
+    throw std::logic_error("not implemented");
+}
+
+Matrix Matrix::slice_cols(int start, int len)
+{
+    // TODO: implement
+    throw std::logic_error("not implemented");
+}
+
+Matrix Matrix::concat_cols(const Matrix &other)
+{
+    // TODO: implement
+    throw std::logic_error("not implemented");
+}

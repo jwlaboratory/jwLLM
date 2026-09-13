@@ -17,4 +17,10 @@ public:
     Matrix transpose();
     Matrix multiply_scalar(float scalar);
     Matrix gelu();
+
+    Matrix broadcast_add_row(const Matrix &row);
+    Matrix broadcast_multiply_row(const Matrix &row);
+    Matrix softmax_rows();
+    Matrix slice_cols(int start, int len);
+    Matrix concat_cols(const Matrix &other);
 };
