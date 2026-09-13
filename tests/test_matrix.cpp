@@ -274,3 +274,103 @@ TEST(Matrix, SliceColsThenConcatColsReturnsOriginal)
     EXPECT_EQ(rejoined.cols, matrix.cols);
     EXPECT_EQ(rejoined.data, matrix.data);
 }
+TEST(Matrix, LayernormNormalizesEachRowToZeroMeanUnitVariance)
+{
+    Matrix x(2, 4, {1.0f, 2.0f, 3.0f, 4.0f,
+                    10.0f, 10.0f, 10.0f, 10.0f});
+    Matrix gamma(1, 4, {1.0f, 1.0f, 1.0f, 1.0f});
+    Matrix beta(1, 4, {0.0f, 0.0f, 0.0f, 0.0f});
+
+    Matrix result = x.layernorm(gamma, beta);
+
+    EXPECT_EQ(result.rows, 2);
+    EXPECT_EQ(result.cols, 4);
+
+    // row 0: mean 2.5, var 1.25 (population, not sample), std ~1.1180
+    float s = std::sqrt(1.25f + 1e-5f);
+    EXPECT_NEAR(result.data[0], -1.5f / s, 1e-4f);
+    EXPECT_NEAR(result.data[1], -0.5f / s, 1e-4f);
+    EXPECT_NEAR(result.data[2], 0.5f / s, 1e-4f);
+    EXPECT_NEAR(result.data[3], 1.5f / s, 1e-4f);
+
+    // row 1 is constant: var 0, so eps keeps us from dividing by zero and
+    // every entry comes out 0
+    for (int g = 0; g < 4; g++)
+    {
+        EXPECT_NEAR(result.data[4 + g], 0.0f, 1e-6f);
+    }
+}
+
+TEST(Matrix, LayernormRowsAreIndependent)
+{
+    // same row 0 as above, but a different row 1 must not change row 0's result
+    Matrix a(2, 4, {1.0f, 2.0f, 3.0f, 4.0f,
+                    10.0f, 10.0f, 10.0f, 10.0f});
+    Matrix b(2, 4, {1.0f, 2.0f, 3.0f, 4.0f,
+                    -100.0f, 0.0f, 50.0f, 7.0f});
+    Matrix gamma(1, 4, {1.0f, 1.0f, 1.0f, 1.0f});
+    Matrix beta(1, 4, {0.0f, 0.0f, 0.0f, 0.0f});
+
+    Matrix ra = a.layernorm(gamma, beta);
+    Matrix rb = b.layernorm(gamma, beta);
+
+    for (int g = 0; g < 4; g++)
+    {
+        EXPECT_NEAR(ra.data[g], rb.data[g], 1e-6f);
+    }
+}
+
+TEST(Matrix, LayernormAppliesGammaAndBetaPerColumn)
+{
+    Matrix x(1, 4, {1.0f, 2.0f, 3.0f, 4.0f});
+    Matrix gamma(1, 4, {2.0f, 0.0f, -1.0f, 1.0f});
+    Matrix beta(1, 4, {0.0f, 5.0f, 1.0f, -1.0f});
+
+    Matrix plain = x.layernorm(Matrix(1, 4, {1.0f, 1.0f, 1.0f, 1.0f}),
+                               Matrix(1, 4, {0.0f, 0.0f, 0.0f, 0.0f}));
+    Matrix result = x.layernorm(gamma, beta);
+
+    for (int g = 0; g < 4; g++)
+    {
+        EXPECT_NEAR(result.data[g], plain.data[g] * gamma.data[g] + beta.data[g], 1e-5f);
+    }
+}
+
+TEST(Matrix, LayernormDoesNotModifyInput)
+{
+    Matrix x(1, 3, {3.0f, 6.0f, 9.0f});
+    Matrix gamma(1, 3, {1.0f, 1.0f, 1.0f});
+    Matrix beta(1, 3, {0.0f, 0.0f, 0.0f});
+
+    x.layernorm(gamma, beta);
+
+    EXPECT_EQ(x.data, std::vector<float>({3.0f, 6.0f, 9.0f}));
+}
+
+TEST(Matrix, LayernormRejectsMismatchedGammaBetaWidth)
+{
+    Matrix x(2, 4, {1.0f, 2.0f, 3.0f, 4.0f,
+                    5.0f, 6.0f, 7.0f, 8.0f});
+    Matrix gamma3(1, 3, {1.0f, 1.0f, 1.0f});
+    Matrix beta4(1, 4, {0.0f, 0.0f, 0.0f, 0.0f});
+
+    EXPECT_THROW(x.layernorm(gamma3, beta4), std::invalid_argument);
+}
+
+TEST(Matrix, LayernormMatchesGPT2ScaleBehaviour)
+{
+    // layernorm is scale invariant: scaling every entry in a row by a
+    // constant should give the same normalized output (up to eps)
+    Matrix x(1, 4, {1.0f, 2.0f, 3.0f, 4.0f});
+    Matrix xs = x.multiply_scalar(1000.0f);
+    Matrix gamma(1, 4, {1.0f, 1.0f, 1.0f, 1.0f});
+    Matrix beta(1, 4, {0.0f, 0.0f, 0.0f, 0.0f});
+
+    Matrix r = x.layernorm(gamma, beta);
+    Matrix rs = xs.layernorm(gamma, beta);
+
+    for (int g = 0; g < 4; g++)
+    {
+        EXPECT_NEAR(r.data[g], rs.data[g], 1e-3f);
+    }
+}

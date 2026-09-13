@@ -5,6 +5,7 @@
 
 #include "embedding.hpp"
 #include "matrix.hpp"
+#include "safetensors.hpp"
 #include "tokenizer.hpp"
 
 // End-to-end test of the pipeline wired up in main.cpp: raw input ->
@@ -12,7 +13,8 @@
 TEST(Pipeline, TokenizeEmbedAndPositionallyEncode)
 {
     Tokenizer tok("data/vocab.json", "data/merges.txt");
-    Embedding embedding("data/model.safetensors");
+    SafeTensors weights("data/model.safetensors");
+    Embedding embedding(weights);
 
     std::string input = "Hello world!!!";
 

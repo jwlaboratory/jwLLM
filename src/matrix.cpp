@@ -240,3 +240,45 @@ Matrix Matrix::concat_cols(const Matrix &other)
     }
     return Matrix(this->rows, max_len, out);
 }
+// normalize each row to mean 0 / variance 1, then scale by gamma and shift by beta
+Matrix Matrix::layernorm(const Matrix &gamma, const Matrix &beta, float eps)
+{
+
+    vector<float> out(this->data.size());
+
+    for (int i = 0; i < this->rows; i++)
+    {
+
+        // for each row
+        float mean = 0;
+        for (int g = 0; g < this->cols; g++)
+        {
+            mean += this->data[i * this->cols + g];
+        }
+        mean /= this->cols;
+
+        float var = 0;
+        for (int g = 0; g < this->cols; g++)
+        {
+            float diff = this->data[i * this->cols + g] - mean;
+            var += diff * diff;
+        }
+        var /= this->cols;
+        // vaiance is difference^2) averaged out
+        // variance is sigma (standard deviation squared)
+
+        // z sciore - (x-u)/sigma
+        // we basically calcualting this
+
+        // eps to pevent divide by zero
+
+        for (int g = 0; g < this->cols; g++)
+        {
+            out[i * this->cols + g] = (this->data[i * this->cols + g] - mean) / std::sqrt(var + eps);
+        }
+    }
+
+    // beta and gamma are learned so model decides what to expand. gamma is sscaler, beta is additive. //eps is to prevent divide by zero
+    Matrix out_m = Matrix(this->rows, this->cols, out);
+    return (out_m.broadcast_multiply_row(gamma)).broadcast_add_row(beta);
+}

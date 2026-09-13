@@ -2,11 +2,12 @@
 
 #include <vector>
 #include "matrix.hpp"
+#include "safetensors.hpp"
 
 class Embedding
 {
 public:
-    Embedding(std::string file_path_safe_tensors);
+    Embedding(SafeTensors &weights);
     Matrix tokenized_to_embed(const Matrix &token_ids);
     void apply_positional_encoding(Matrix &token_embeddings);
 

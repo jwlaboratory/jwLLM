@@ -2,6 +2,7 @@
 #include "matrix.hpp"
 #include "tokenizer.hpp"
 #include "embedding.hpp"
+#include "safetensors.hpp"
 
 using std::cin;
 using std::cout;
@@ -13,7 +14,8 @@ using std::vector;
 int main()
 {
     Tokenizer tok("data/vocab.json", "data/merges.txt");
-    Embedding embedding("data/model.safetensors");
+    SafeTensors weights("data/model.safetensors");
+    Embedding embedding(weights);
 
     cout << "User: ";
     string user_input;

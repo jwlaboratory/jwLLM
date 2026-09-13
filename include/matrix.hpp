@@ -21,6 +21,7 @@ public:
     Matrix broadcast_add_row(const Matrix &row);
     Matrix broadcast_multiply_row(const Matrix &row);
     Matrix softmax_rows();
+    Matrix layernorm(const Matrix &gamma, const Matrix &beta, float eps = 1e-5f);
     Matrix slice_cols(int start, int len);
     Matrix concat_cols(const Matrix &other);
 };

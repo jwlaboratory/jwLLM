@@ -8,6 +8,7 @@
 
 #include "embedding.hpp"
 #include "matrix.hpp"
+#include "safetensors.hpp"
 
 using json = nlohmann::json;
 
@@ -27,9 +28,9 @@ namespace
         1.0f, 1.1f, 1.2f,
         1.3f, 1.4f, 1.5f};
 
-    // Writes a minimal safetensors file containing transformer.wte.weight
-    // and transformer.wpe.weight, matching the layout Embedding's
-    // constructor expects, and returns its path.
+    // Writes a minimal safetensors file containing wte.weight and
+    // wpe.weight, the tensor names Embedding's constructor expects,
+    // and returns its path.
     std::string write_fixture_safetensors()
     {
         std::string path = "build/test_embedding_fixture.safetensors";
@@ -55,13 +56,30 @@ namespace
 
     Embedding make_embedding()
     {
-        return Embedding(write_fixture_safetensors());
+        SafeTensors weights(write_fixture_safetensors());
+        return Embedding(weights);
     }
 } // namespace
 
-TEST(Embedding, ThrowsOnMissingFile)
+TEST(Embedding, ThrowsWhenEmbeddingTensorsAreMissing)
 {
-    EXPECT_THROW(Embedding("data/does_not_exist.safetensors"), std::runtime_error);
+    // A safetensors file that opens fine but has no wte/wpe tensors.
+    std::string path = "build/test_embedding_missing_fixture.safetensors";
+    json header = {
+        {"unrelated.weight", {{"dtype", "F32"}, {"shape", {1}}, {"data_offsets", {0, 4}}}},
+    };
+    std::string header_str = header.dump();
+    uint64_t header_len = header_str.size();
+    float value = 0.0f;
+    {
+        std::ofstream out(path, std::ios::binary | std::ios::trunc);
+        out.write(reinterpret_cast<const char *>(&header_len), sizeof(header_len));
+        out.write(header_str.data(), header_str.size());
+        out.write(reinterpret_cast<const char *>(&value), sizeof(value));
+    }
+
+    SafeTensors weights(path);
+    EXPECT_THROW(Embedding emb(weights), std::runtime_error);
 }
 
 TEST(Embedding, TokenizedToEmbedLooksUpCorrectRows)
