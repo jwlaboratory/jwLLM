@@ -156,7 +156,39 @@ Matrix Matrix::broadcast_multiply_row(const Matrix &row)
 
 Matrix Matrix::softmax_rows()
 {
-    throw std::logic_error("not implemented");
+
+    vector<float> out(this->data.size());
+
+    // loop 0: for each row
+    for (int row = 0; row < this->rows; row++)
+    {
+
+        // loop one: find max val in the row
+        float max = this->data[row * this->cols + 0];
+        for (int g = 0; g < this->cols; g++)
+        {
+            if (this->data[row * this->cols + g] > max)
+            {
+                max = this->data[row * this->cols + g];
+            }
+        }
+
+        // loop 2: calc sum and set each index to the e^(si-max)
+        float sum_of_all = 0;
+        for (int g = 0; g < this->cols; g++)
+        {
+            out[row * this->cols + g] = std::exp(this->data[row * this->cols + g] - max);
+            sum_of_all += out[row * this->cols + g];
+        }
+
+        // loop 3: divide all by sum
+        for (int g = 0; g < this->cols; g++)
+        {
+            out[row * this->cols + g] /= sum_of_all;
+        }
+    }
+
+    return Matrix(this->rows, this->cols, out);
 }
 
 Matrix Matrix::slice_cols(int start, int len)
