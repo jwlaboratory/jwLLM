@@ -20,6 +20,7 @@ public:
 
     Matrix broadcast_add_row(const Matrix &row) const;
     Matrix broadcast_multiply_row(const Matrix &row) const;
+    Matrix mask_causal(float big_negative = -1e9f) const;
     Matrix softmax_rows() const;
     Matrix layernorm(const Matrix &gamma, const Matrix &beta, float eps = 1e-5f) const;
     Matrix slice_cols(int start, int len) const;

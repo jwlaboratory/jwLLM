@@ -374,3 +374,131 @@ TEST(Matrix, LayernormMatchesGPT2ScaleBehaviour)
         EXPECT_NEAR(r.data[g], rs.data[g], 1e-3f);
     }
 }
+
+TEST(Matrix, MaskCausalBlanksOutTheUpperTriangle)
+{
+    Matrix scores(3, 3, {1.0f, 2.0f, 3.0f,
+                         4.0f, 5.0f, 6.0f,
+                         7.0f, 8.0f, 9.0f});
+
+    Matrix result = scores.mask_causal();
+
+    EXPECT_EQ(result.rows, 3);
+    EXPECT_EQ(result.cols, 3);
+
+    // col > row is the future, and must become very negative. the test does
+    // not pin the exact constant, only that softmax will flush it to zero.
+    EXPECT_LT(result.data[1], -1e8f); // row 0, col 1
+    EXPECT_LT(result.data[2], -1e8f); // row 0, col 2
+    EXPECT_LT(result.data[5], -1e8f); // row 1, col 2
+}
+
+TEST(Matrix, MaskCausalLeavesThePastAndDiagonalUntouched)
+{
+    Matrix scores(3, 3, {1.0f, 2.0f, 3.0f,
+                         4.0f, 5.0f, 6.0f,
+                         7.0f, 8.0f, 9.0f});
+
+    Matrix result = scores.mask_causal();
+
+    // diagonal: every position can always see itself
+    EXPECT_FLOAT_EQ(result.data[0], 1.0f); // row 0, col 0
+    EXPECT_FLOAT_EQ(result.data[4], 5.0f); // row 1, col 1
+    EXPECT_FLOAT_EQ(result.data[8], 9.0f); // row 2, col 2
+
+    // strictly below the diagonal: the past, passed through unchanged
+    EXPECT_FLOAT_EQ(result.data[3], 4.0f); // row 1, col 0
+    EXPECT_FLOAT_EQ(result.data[6], 7.0f); // row 2, col 0
+    EXPECT_FLOAT_EQ(result.data[7], 8.0f); // row 2, col 1
+}
+
+TEST(Matrix, MaskCausalRejectsNonSquare)
+{
+    // a score matrix is always seq x seq; anything else is a bug upstream
+    Matrix wrong(2, 3, {1.0f, 2.0f, 3.0f,
+                        4.0f, 5.0f, 6.0f});
+
+    EXPECT_THROW(wrong.mask_causal(), std::invalid_argument);
+}
+
+TEST(Matrix, MaskCausalDoesNotModifyInput)
+{
+    Matrix scores(2, 2, {1.0f, 2.0f,
+                         3.0f, 4.0f});
+
+    scores.mask_causal();
+
+    EXPECT_EQ(scores.data, std::vector<float>({1.0f, 2.0f, 3.0f, 4.0f}));
+}
+
+TEST(Matrix, MaskCausalIsANoOpForASingleToken)
+{
+    Matrix scores(1, 1, {7.0f});
+
+    Matrix result = scores.mask_causal();
+
+    EXPECT_FLOAT_EQ(result.data[0], 7.0f);
+}
+
+TEST(Matrix, MaskCausalThenSoftmaxGivesLowerTriangularWeights)
+{
+    // the real contract: mask -> softmax_rows should leave every row a
+    // probability distribution over that row's own past only.
+    Matrix scores(3, 3, {1.0f, 9.0f, 9.0f,
+                         1.0f, 1.0f, 9.0f,
+                         1.0f, 1.0f, 1.0f});
+
+    Matrix weights = scores.mask_causal().softmax_rows();
+
+    // future positions get no weight at all, even though their raw scores
+    // were the largest in the row
+    EXPECT_NEAR(weights.data[1], 0.0f, 1e-6f);
+    EXPECT_NEAR(weights.data[2], 0.0f, 1e-6f);
+    EXPECT_NEAR(weights.data[5], 0.0f, 1e-6f);
+
+    // token 0 has only itself to look at, so it must put all its weight there
+    EXPECT_NEAR(weights.data[0], 1.0f, 1e-6f);
+
+    // token 1 splits evenly between positions 0 and 1 (equal scores)
+    EXPECT_NEAR(weights.data[3], 0.5f, 1e-6f);
+    EXPECT_NEAR(weights.data[4], 0.5f, 1e-6f);
+
+    // token 2 splits evenly across all three
+    for (int g = 0; g < 3; g++)
+    {
+        EXPECT_NEAR(weights.data[6 + g], 1.0f / 3.0f, 1e-6f);
+    }
+
+    // and every row is still a distribution
+    for (int i = 0; i < 3; i++)
+    {
+        float sum = 0;
+        for (int g = 0; g < 3; g++)
+        {
+            sum += weights.data[i * 3 + g];
+        }
+        EXPECT_NEAR(sum, 1.0f, 1e-6f);
+    }
+}
+
+TEST(Matrix, MaskCausalMakesEarlierRowsIgnoreLaterTokens)
+{
+    // changing a score that only a *later* row can see must not change any
+    // earlier row's weights. this is the invariant that makes KV caching work.
+    Matrix a(3, 3, {1.0f, 5.0f, 5.0f,
+                    2.0f, 3.0f, 5.0f,
+                    1.0f, 2.0f, 3.0f});
+    Matrix b(3, 3, {1.0f, -50.0f, 99.0f,
+                    2.0f, 3.0f, -7.0f,
+                    1.0f, 2.0f, 3.0f});
+
+    Matrix wa = a.mask_causal().softmax_rows();
+    Matrix wb = b.mask_causal().softmax_rows();
+
+    // rows 0 and 1 differ only in their masked-out columns, so their
+    // resulting weights must be identical
+    for (int g = 0; g < 6; g++)
+    {
+        EXPECT_NEAR(wa.data[g], wb.data[g], 1e-6f);
+    }
+}

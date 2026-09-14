@@ -1,3 +1,4 @@
+#pragma once
 #include "safetensors.hpp"
 #include "matrix.hpp"
 
@@ -10,4 +11,6 @@ public:
 private:
     Matrix ATTENTION_WEIGHTS;
     Matrix ATTENTION_BIAS;
+    int heads;
+    int dmodel;
 };

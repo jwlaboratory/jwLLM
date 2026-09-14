@@ -282,3 +282,26 @@ Matrix Matrix::layernorm(const Matrix &gamma, const Matrix &beta, float eps) con
     Matrix out_m = Matrix(this->rows, this->cols, out);
     return (out_m.broadcast_multiply_row(gamma)).broadcast_add_row(beta);
 }
+
+Matrix Matrix::mask_causal(float big_negative) const
+{
+    vector<float> out(this->data.size());
+
+    if (this->rows != this->cols)
+    {
+        throw std::invalid_argument("must be a square matrix");
+    }
+
+    for (int i = 0; i < this->rows; i++)
+    {
+        for (int g = 0; g < this->cols; g++)
+        {
+
+            if (g > i)
+                out[i * this->cols + g] = big_negative;
+            else
+                out[i * this->cols + g] = this->data[i * this->cols + g];
+        }
+    }
+    return Matrix(this->rows, this->cols, out);
+}
