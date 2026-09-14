@@ -1,8 +1,10 @@
 # jwLLM: a LLM inference server built in Cpp
 
+1. tests written with AI
+2. download safetensors into /data from https://huggingface.co/openai-community/gpt2
 
-We are building engine for
-https://huggingface.co/openai-community/gpt2
+
+We are building engine for 
 
 each week of work is aimed to align with learning objectives from Operating Systems 439
 
