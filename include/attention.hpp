@@ -11,6 +11,8 @@ public:
 private:
     Matrix ATTENTION_WEIGHTS;
     Matrix ATTENTION_BIAS;
+    Matrix PROJECTION_WEIGHTS;
+    Matrix PROJECTION_BIAS;
     int heads;
     int dmodel;
 };

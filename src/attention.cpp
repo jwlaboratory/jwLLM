@@ -5,6 +5,11 @@ Attention::Attention(SafeTensors &weights, const std::string &prefix, int heads)
 {
     ATTENTION_WEIGHTS = weights.get(prefix + "attn.c_attn.weight");
     ATTENTION_BIAS = weights.get(prefix + "attn.c_attn.bias");
+
+    // projection s after attention to mix the splitting
+    PROJECTION_WEIGHTS = weights.get(prefix + "attn.c_proj.weight");
+    PROJECTION_BIAS = weights.get(prefix + "attn.c_proj.bias");
+
     this->heads = heads;
     dmodel = ATTENTION_WEIGHTS.rows;
 
@@ -52,15 +57,13 @@ Matrix Attention::forward(const Matrix &x)
         // tells us how much each entry in x relates to x, in that zone of embedding focus
 
         // divide by the sqrt d_k
-        Matrix pre_softmax = Q_kt.multiply_scalar(1 / std::sqrt(d_head));
+        Matrix pre_mask = Q_kt.multiply_scalar(1 / std::sqrt(d_head));
+        Matrix masked = pre_mask.mask_causal();
+        Matrix softmaxed = masked.softmax_rows(); // still [seq, seq]
 
-        Matrix softmaxed = pre_softmax.softmax_rows(); // still [seq, seq]
-
-        Matrix masked = softmaxed.mask_causal();
-
-        Matrix post_v = masked.multiply(v_head);
-        // [seq,seq] * [seq, dmodel]
-        // now back to [seq, dmodel]
+        Matrix post_v = softmaxed.multiply(v_head);
+        // [seq,seq] * [seq, dhead]
+        // now back to [seq, dhead]
 
         // append
         if (h == 0)
@@ -69,5 +72,8 @@ Matrix Attention::forward(const Matrix &x)
         else
             output = output.concat_cols(post_v);
     }
-    return output;
+
+    // do the projections
+    return output.multiply(PROJECTION_WEIGHTS).broadcast_add_row(PROJECTION_BIAS);
+    //[seq, dmodel]
 }

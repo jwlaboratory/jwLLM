@@ -63,9 +63,25 @@ namespace
         uint64_t weight_bytes = fused_weight.size() * sizeof(float);
         uint64_t bias_bytes = fused_bias.size() * sizeof(float);
 
+        // c_proj is left as identity with a zero bias, so the output
+        // projection is a no-op and the per-head expectations below stay
+        // hand-checkable. Tests that care about c_proj set it explicitly.
+        std::vector<float> proj_weight = eye(dmodel);
+        std::vector<float> proj_bias(dmodel, 0.0f);
+        uint64_t proj_weight_bytes = proj_weight.size() * sizeof(float);
+        uint64_t proj_bias_bytes = proj_bias.size() * sizeof(float);
+
+        uint64_t o0 = 0;
+        uint64_t o1 = o0 + weight_bytes;
+        uint64_t o2 = o1 + bias_bytes;
+        uint64_t o3 = o2 + proj_weight_bytes;
+        uint64_t o4 = o3 + proj_bias_bytes;
+
         json header = {
-            {"h.0.attn.c_attn.weight", {{"dtype", "F32"}, {"shape", {dmodel, 3 * dmodel}}, {"data_offsets", {0, weight_bytes}}}},
-            {"h.0.attn.c_attn.bias", {{"dtype", "F32"}, {"shape", {3 * dmodel}}, {"data_offsets", {weight_bytes, weight_bytes + bias_bytes}}}},
+            {"h.0.attn.c_attn.weight", {{"dtype", "F32"}, {"shape", {dmodel, 3 * dmodel}}, {"data_offsets", {o0, o1}}}},
+            {"h.0.attn.c_attn.bias", {{"dtype", "F32"}, {"shape", {3 * dmodel}}, {"data_offsets", {o1, o2}}}},
+            {"h.0.attn.c_proj.weight", {{"dtype", "F32"}, {"shape", {dmodel, dmodel}}, {"data_offsets", {o2, o3}}}},
+            {"h.0.attn.c_proj.bias", {{"dtype", "F32"}, {"shape", {dmodel}}, {"data_offsets", {o3, o4}}}},
         };
         std::string header_str = header.dump();
         uint64_t header_len = header_str.size();
@@ -75,6 +91,8 @@ namespace
         out.write(header_str.data(), header_str.size());
         out.write(reinterpret_cast<const char *>(fused_weight.data()), weight_bytes);
         out.write(reinterpret_cast<const char *>(fused_bias.data()), bias_bytes);
+        out.write(reinterpret_cast<const char *>(proj_weight.data()), proj_weight_bytes);
+        out.write(reinterpret_cast<const char *>(proj_bias.data()), proj_bias_bytes);
 
         return path;
     }
@@ -286,10 +304,9 @@ TEST(Attention, HeadOutputsKeepTheirColumnOrderWhenConcatenated)
 
 TEST(Attention, RejectsHeadCountThatDoesNotDivideDModel)
 {
-    Attention attn = make_uniform_attention("build/test_attention_baddiv.safetensors", 4, 3);
-
-    EXPECT_THROW(attn.forward(Matrix(2, 4, {1.0f, 2.0f, 3.0f, 4.0f,
-                                            5.0f, 6.0f, 7.0f, 8.0f})),
+    // the check lives in the constructor, so a bad head count fails when the
+    // model is loaded rather than on the first forward pass
+    EXPECT_THROW(make_uniform_attention("build/test_attention_baddiv.safetensors", 4, 3),
                  std::invalid_argument);
 }
 
