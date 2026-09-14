@@ -11,17 +11,17 @@ public:
 
     Matrix();
     Matrix(int rows, int cols, std::vector<float> passed_data);
-    Matrix multiply(const Matrix &other);
-    Matrix addition(const Matrix &other);
+    Matrix multiply(const Matrix &other) const;
+    Matrix addition(const Matrix &other) const; // we need the functions returning cost so we can chain together multiple functions
 
-    Matrix transpose();
-    Matrix multiply_scalar(float scalar);
-    Matrix gelu();
+    Matrix transpose() const;
+    Matrix multiply_scalar(float scalar) const;
+    Matrix gelu() const;
 
-    Matrix broadcast_add_row(const Matrix &row);
-    Matrix broadcast_multiply_row(const Matrix &row);
-    Matrix softmax_rows();
-    Matrix layernorm(const Matrix &gamma, const Matrix &beta, float eps = 1e-5f);
-    Matrix slice_cols(int start, int len);
-    Matrix concat_cols(const Matrix &other);
+    Matrix broadcast_add_row(const Matrix &row) const;
+    Matrix broadcast_multiply_row(const Matrix &row) const;
+    Matrix softmax_rows() const;
+    Matrix layernorm(const Matrix &gamma, const Matrix &beta, float eps = 1e-5f) const;
+    Matrix slice_cols(int start, int len) const;
+    Matrix concat_cols(const Matrix &other) const;
 };

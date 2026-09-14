@@ -18,7 +18,7 @@ Matrix::Matrix(int rows, int cols, vector<float> passed_data)
     this->data = passed_data;
 }
 
-Matrix Matrix::multiply(const Matrix &other)
+Matrix Matrix::multiply(const Matrix &other) const
 {
     // check dims
     if (cols != other.rows)
@@ -47,7 +47,7 @@ Matrix Matrix::multiply(const Matrix &other)
     return Matrix(rows, other.cols, out);
 }
 
-Matrix Matrix::addition(const Matrix &other)
+Matrix Matrix::addition(const Matrix &other) const
 {
     // check dims
     if (cols != other.cols || rows != other.rows)
@@ -63,7 +63,7 @@ Matrix Matrix::addition(const Matrix &other)
     return Matrix(rows, cols, out);
 }
 
-Matrix Matrix::transpose()
+Matrix Matrix::transpose() const
 {
     // we store row x col
     // we need to swap to col x row
@@ -91,7 +91,7 @@ Matrix Matrix::transpose()
     return Matrix(this->cols, this->rows, out);
 }
 
-Matrix Matrix::multiply_scalar(float scalar)
+Matrix Matrix::multiply_scalar(float scalar) const
 {
     vector<float> out(this->data.size());
     for (int i = 0; i < this->data.size(); i++)
@@ -101,7 +101,7 @@ Matrix Matrix::multiply_scalar(float scalar)
     return Matrix(this->rows, this->cols, out);
 }
 
-Matrix Matrix::gelu()
+Matrix Matrix::gelu() const
 {
     vector<float> out(this->data.size());
     for (int i = 0; i < this->data.size(); i++)
@@ -112,7 +112,7 @@ Matrix Matrix::gelu()
     return Matrix(this->rows, this->cols, out);
 }
 
-Matrix Matrix::broadcast_add_row(const Matrix &row)
+Matrix Matrix::broadcast_add_row(const Matrix &row) const
 {
     // we have a matrix [seqlen x dmodel]
     // we want to add a bias of size [dmodel]
@@ -135,7 +135,7 @@ Matrix Matrix::broadcast_add_row(const Matrix &row)
     return Matrix(this->rows, this->cols, out);
 }
 
-Matrix Matrix::broadcast_multiply_row(const Matrix &row)
+Matrix Matrix::broadcast_multiply_row(const Matrix &row) const
 {
     if (row.rows != 1 || this->cols != row.cols)
     {
@@ -154,7 +154,7 @@ Matrix Matrix::broadcast_multiply_row(const Matrix &row)
     return Matrix(this->rows, this->cols, out);
 }
 
-Matrix Matrix::softmax_rows()
+Matrix Matrix::softmax_rows() const
 {
 
     vector<float> out(this->data.size());
@@ -192,7 +192,7 @@ Matrix Matrix::softmax_rows()
 }
 
 // given a matrix, give the data in col start, start+1, start+2... start+len
-Matrix Matrix::slice_cols(int start, int len)
+Matrix Matrix::slice_cols(int start, int len) const
 {
     if (start < 0 || len <= 0 || start + len > this->cols)
         throw std::invalid_argument("slice out of range");
@@ -213,7 +213,7 @@ Matrix Matrix::slice_cols(int start, int len)
     return Matrix(this->rows, len, out);
 }
 
-Matrix Matrix::concat_cols(const Matrix &other)
+Matrix Matrix::concat_cols(const Matrix &other) const
 {
 
     if (other.rows != this->rows)
@@ -241,7 +241,7 @@ Matrix Matrix::concat_cols(const Matrix &other)
     return Matrix(this->rows, max_len, out);
 }
 // normalize each row to mean 0 / variance 1, then scale by gamma and shift by beta
-Matrix Matrix::layernorm(const Matrix &gamma, const Matrix &beta, float eps)
+Matrix Matrix::layernorm(const Matrix &gamma, const Matrix &beta, float eps) const
 {
 
     vector<float> out(this->data.size());
