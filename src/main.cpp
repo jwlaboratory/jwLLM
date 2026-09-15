@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include "tokenizer.hpp"
 #include "safetensors.hpp"
@@ -27,13 +28,22 @@ int main()
     // 3) generate one token at a time so it streams
     int max_new_tokens = 20;
     cout << "GPT: " << user_input << flush;
+    int tokens_generated = 0;
+    auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < max_new_tokens && (int)ids.size() < model.max_context(); i++)
     {
         int next = model.next_token(ids); // note we dont use generate so we can get token by token
         ids.push_back(next);
         cout << tok.decode({next}) << flush;
+        tokens_generated++;
     }
+    auto end = std::chrono::steady_clock::now();
     cout << endl;
+
+    double elapsed_sec = std::chrono::duration<double>(end - start).count();
+    double tok_per_sec = tokens_generated / elapsed_sec;
+    cout << "[stats] " << tokens_generated << " tokens in " << elapsed_sec
+         << "s (" << tok_per_sec << " tok/sec)" << endl;
 
     return 0;
 }
