@@ -11,8 +11,8 @@ class Tokenizer
 public:
     Tokenizer(std::string _mapping_json_path, std::string _merge_txt_path);
 
-    Matrix encode(std::string in);
-    std::string decode(Matrix in);
+    std::vector<int> encode(std::string in);
+    std::string decode(std::vector<int> in);
 
     std::unordered_map<std::string, int> sToT; // string to token#
     std::unordered_map<int, std::string> tToS; // token# to string

@@ -35,7 +35,7 @@ TEST(Tokenizer, DecodeConcatenatesTokenStrings)
 {
     Tokenizer tok = make_tokenizer();
 
-    Matrix encoded(1, 3, {15.0f, 14.0f, 13.0f});
+    std::vector<int> encoded = {15, 14, 13};
     std::string expected = tok.tToS.at(15) +
                            tok.tToS.at(14) +
                            tok.tToS.at(13);
@@ -56,17 +56,16 @@ TEST(Tokenizer, EncodeTest)
     Tokenizer tok = make_tokenizer();
     std::string input = "Hello my name is shrey how are you doing ajasjdu ! uaksjljnm r .asodp12031; salj1 sk a19 python code ! ;!!!";
 
-    std::vector<float> expected_data = {
+    std::vector<int> expected_data = {
         15496, 616, 1438, 318, 427, 4364, 703, 389, 345, 1804,
         257, 28121, 73, 646, 5145, 334, 4730, 20362, 73, 21533,
         374, 764, 292, 375, 79, 1065, 43637, 26, 3664, 73, 16,
         1341, 257, 1129, 21015, 2438, 5145, 2162, 10185};
 
-    Matrix actual = tok.encode(input);
+    std::vector<int> actual = tok.encode(input);
 
-    EXPECT_EQ(actual.rows, 1);
-    EXPECT_EQ(actual.cols, expected_data.size());
-    EXPECT_EQ(actual.data, expected_data);
+    EXPECT_EQ(actual.size(), expected_data.size());
+    EXPECT_EQ(actual, expected_data);
 }
 
 TEST(Tokenizer, EncodeDecodeRoundTrip2)

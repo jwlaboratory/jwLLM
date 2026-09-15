@@ -9,16 +9,16 @@ Embedding::Embedding(SafeTensors &weights)
     WORD_POSITIONAL_EMBEDDING = weights.get("wpe.weight");
 }
 
-Matrix Embedding::tokenized_to_embed(const Matrix &token_ids)
+Matrix Embedding::tokenized_to_embed(const std::vector<int> &token_ids)
 {
-    // token_ids is a single sequence: 1 row, seq_len cols, ids stored as floats.
+    // token_ids is a single sequence of vocab ids
     int d_model = WORD_TOKEN_EMBEDDING.cols;
-    int seq_len = token_ids.cols;
+    int seq_len = token_ids.size();
     std::vector<float> out(seq_len * d_model);
 
     for (int i = 0; i < seq_len; i++)
     {
-        int token_id = static_cast<int>(token_ids.data[i]);
+        int token_id = token_ids[i];
 
         for (int g = 0; g < d_model; g++)
         {

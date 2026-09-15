@@ -19,16 +19,14 @@ TEST(Pipeline, TokenizeEmbedAndPositionallyEncode)
     std::string input = "Hello world!!!";
 
     // 1) input -> 2) tokenize
-    Matrix tokenized = tok.encode(input);
-    ASSERT_EQ(tokenized.rows, 1);
-    ASSERT_GT(tokenized.cols, 0);
-    std::vector<int> token_ids(tokenized.data.begin(), tokenized.data.end());
+    std::vector<int> token_ids = tok.encode(input);
+    ASSERT_GT(token_ids.size(), 0u);
 
     // decoding what we tokenized should give back the original input
-    ASSERT_EQ(tok.decode(tokenized), input);
+    ASSERT_EQ(tok.decode(token_ids), input);
 
     // 3) embed
-    Matrix embedded = embedding.tokenized_to_embed(tokenized);
+    Matrix embedded = embedding.tokenized_to_embed(token_ids);
     ASSERT_EQ(embedded.rows, static_cast<int>(token_ids.size()));
     ASSERT_GT(embedded.cols, 0);
 

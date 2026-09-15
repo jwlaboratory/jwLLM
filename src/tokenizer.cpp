@@ -50,9 +50,9 @@ Tokenizer::Tokenizer(string _mapping_json_path, string _merge_txt_path)
     byte2unicode();
 }
 
-Matrix Tokenizer::encode(string in)
+std::vector<int> Tokenizer::encode(string in)
 {
-    std::vector<float> final_tokens;
+    std::vector<int> final_tokens;
 
     // 1 apply the regex
     std::vector<std::string> split_input_string = regex_split(in, regex_splitter);
@@ -65,11 +65,10 @@ Matrix Tokenizer::encode(string in)
 
         for (int tokenized_chunk_nums : tokenized_chunk)
         {
-            final_tokens.push_back((float)tokenized_chunk_nums);
+            final_tokens.push_back(tokenized_chunk_nums);
         }
     }
-    Matrix out = Matrix(1, final_tokens.size(), final_tokens);
-    return out;
+    return final_tokens;
 }
 
 std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
@@ -226,13 +225,12 @@ std::vector<int> Tokenizer::tokenize_chunk(std::string chunk)
     return output;
 }
 
-string Tokenizer::decode(Matrix in)
+string Tokenizer::decode(std::vector<int> in)
 {
-    std::vector<float> vector = in.data;
     std::string disguised;
 
-    for (auto &v : vector)
-        disguised += tToS.at(static_cast<int>(v));
+    for (auto &v : in)
+        disguised += tToS.at(v);
 
     std::string raw;
     size_t i = 0;

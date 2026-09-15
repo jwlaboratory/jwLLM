@@ -86,7 +86,7 @@ TEST(Embedding, TokenizedToEmbedLooksUpCorrectRows)
 {
     Embedding emb = make_embedding();
 
-    Matrix result = emb.tokenized_to_embed(Matrix(1, 3, {2.0f, 0.0f, 3.0f}));
+    Matrix result = emb.tokenized_to_embed({2, 0, 3});
 
     EXPECT_EQ(result.rows, 3);
     EXPECT_EQ(result.cols, 3);
@@ -99,7 +99,7 @@ TEST(Embedding, ApplyPositionalEncodingAddsRatherThanOverwrites)
 {
     Embedding emb = make_embedding();
 
-    Matrix embeddings = emb.tokenized_to_embed(Matrix(1, 2, {1.0f, 2.0f}));
+    Matrix embeddings = emb.tokenized_to_embed({1, 2});
     emb.apply_positional_encoding(embeddings);
 
     // token embedding for id 1 is row1 of wte, plus wpe row0 (position 0)
@@ -119,8 +119,8 @@ TEST(Embedding, ApplyPositionalEncodingKeepsDifferentTokensDistinguishable)
 
     // Two different tokens at the same position (0) must not collapse to
     // the same vector after positional encoding is applied.
-    Matrix a = emb.tokenized_to_embed(Matrix(1, 1, {0.0f}));
-    Matrix b = emb.tokenized_to_embed(Matrix(1, 1, {3.0f}));
+    Matrix a = emb.tokenized_to_embed({0});
+    Matrix b = emb.tokenized_to_embed({3});
 
     emb.apply_positional_encoding(a);
     emb.apply_positional_encoding(b);
