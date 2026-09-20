@@ -16,19 +16,26 @@ class LRU
 private:
     int capacity = 0;
     std::unordered_map<int, struct Node *> hashmap_lookup = {};
-    struct Node MRU = {};
+    struct Node *MRU = new Node({});
 
     void move_to_MRU(struct Node *node)
     {
         struct Node *prev = node->prev;
         struct Node *next = node->next;
-        prev->next = next;
-        next->prev = prev;
+        if (prev != nullptr && next != nullptr)
+        {
+            prev->next = next;
+            next->prev = prev;
+        }
 
         // then move our node to front
-        node->prev = &MRU;
-        node->next = MRU.next;
-        MRU = *node;
+        struct Node *cur_mru = MRU->prev;
+
+        cur_mru->next = node;
+        node->prev = cur_mru;
+
+        node->next = MRU;
+        MRU->prev = node;
     };
 
 public:
@@ -39,8 +46,12 @@ public:
             throw std::invalid_argument("capacity must be > 0");
         }
         this->capacity = capacity;
-        MRU.next = &MRU;
-        MRU.prev = &MRU;
+        MRU->next = MRU;
+        MRU->prev = MRU;
+    };
+
+    ~LRU() {
+        //
     };
 
     int get(int key)
@@ -69,10 +80,11 @@ public:
         if (hashmap_lookup.size() == capacity)
         {
             // assuming more than 1 element
-            struct Node *node_to_remove = MRU.prev;
-            struct Node *prev = node_to_remove->prev;
-            prev->next = &MRU;
-            MRU.prev = prev;
+            struct Node *node_to_remove = MRU->next;
+            struct Node *next = node_to_remove->next;
+
+            next->prev = MRU;
+            MRU->next = next;
 
             hashmap_lookup.erase(node_to_remove->key);
             delete node_to_remove;
