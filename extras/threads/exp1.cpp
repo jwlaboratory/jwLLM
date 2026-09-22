@@ -1,9 +1,14 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <iostream>
+#include <atomic>
+#include <mutex>
 
 int count_till = 100000;
-long counter = 0;
+
+long counter = 0;                   // method 1
+std::atomic<int> counter_atomic(0); // method 2: atomic
+std::mutex m;
 
 void *work(void *arg)
 {
@@ -12,7 +17,9 @@ void *work(void *arg)
 
     for (int i = 0; i < count_till; i++)
     {
+        std::lock_guard<std::mutex> guard(m);
         counter++;
+        counter_atomic++;
     }
 
     return NULL;
@@ -35,6 +42,9 @@ int main()
     }
 
     std::cout << counter << " final value" << std::endl;
+    std::cout << counter_atomic << " final value atmoc" << std::endl;
 
     return 0;
 }
+
+// the best solution is no lock and split up the work so its evern faster
