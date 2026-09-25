@@ -34,7 +34,7 @@ Matrix GPT::forward(const std::vector<int> &token_ids)
     }
 
     x = x.layernorm(LN_F_WEIGHT, LN_F_BIAS);
-    return x.multiply(WTE_T); // back to vocab size
+    return x.multiply(WTE_T); // back to vocab size.  //// shape of this is [vocab, dmodel] transposed is [dmodel vocab]
 }
 
 int GPT::next_token(const std::vector<int> &token_ids)
