@@ -1,4 +1,4 @@
-package extras.multithreaded;
+package extras.multithreaded.dot_product;
 
 import java.io.*;
 import java.util.*;
