@@ -1,5 +1,5 @@
 CXX := c++
-CXXFLAGS := -std=c++20 -Wall -Wextra -Iinclude -Ibuild/deps/json/include -MMD -MP
+CXXFLAGS := -std=c++23 -Wall -Wextra -Iinclude -Ibuild/deps/json/include -MMD -MP
 CPPFLAGS :=
 LDFLAGS :=
 LDLIBS :=
